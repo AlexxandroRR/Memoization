@@ -26,36 +26,42 @@
  * @param timeout   timeout for cached values in milliseconds
  */
 
-
- // List = func 
 function memoize(func, resolver, timeout) {
-    // TODO implement the memoize function
+    const items =[];
+    var moiValue ="";
+    var moiKey = (resolver!=null)?resolver:JSON.stringify(func.arguments);  
+    var itemFound=false;
+// if key is contained in items and entry is still valid then return value
+    foreach(it in items)
+        if(it.key == moiKey){  
 
-    if (!timeout_expired(timeout)&& valueinthelist)
-    {
-        //func = cached value
+            if(Date.now()-it.timeStamp < timeout) //the matching item ist still valid
+                moiValue=it.value;
+            else{
+                it.value = func.apply(null, arguments); // the matching item has expired
+                it.timeStamp = Date.now();
+                moiValue = it.value;
+            }
+            itemFound=true;
+        }
+        else{ // cleans up the expired items -- really required? If not we remove it and we can put a break in the foreach loop as soon as a match hab been found
+            if(Date.now()-it.timeStamp > timeout){
+                var index = items.indexOf((x)=> ḱey ===moiKey);
+                items.slice(index,1);
+            }
+        }
+    if(!itemFound){
+        let entry
+        {
+                    value= func.apply(null, arguments);
+                    key =moiKey;
+                    timeStamp=Date.now();
+        }
+        
+        items.push(entry);
     }
-    else{
-        //func = calculated value
-        //add item to the cache list
-    }
-//------From the example
-    var cache = {};
-    //named functions are awesome!
-    function cacher(func){
-       return function(){
-         var key = JSON.stringify(arguments);
-         if(cache[key]){
-           return cache[key];
-         }
-         else{
-           val = func.apply(this, arguments);
-           cache[key] = val;
-           return val;
-       }
-     }
-// -----End example
-    return func;
+    
+    return moiValue;
 }
 
 module.exports = {
