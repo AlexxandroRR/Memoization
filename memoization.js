@@ -27,7 +27,7 @@
  */
 
 function memoize(func, resolver, timeout) {
-    const items =[];
+    static const items =[];
     var moiValue ="";
     var moiKey = (resolver!=null)?resolver:JSON.stringify(func.arguments);  
     var itemFound=false;
@@ -44,7 +44,7 @@ function memoize(func, resolver, timeout) {
             }
             itemFound=true;
         }
-        else{ // cleans up the expired items -- really required? If not we remove it and we can put a break in the foreach loop as soon as a match hab been found
+        else{ // cleans up the expired items -- really required? If not we can remove it and we can put a break in the foreach loop as soon as a match hab been found
             if(Date.now()-it.timeStamp > timeout){
                 var index = items.indexOf((x)=> ḱey ===moiKey);
                 items.slice(index,1);
