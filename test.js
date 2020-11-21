@@ -15,19 +15,23 @@ describe('memoization', function () {
     it('should memoize function result', () => {
         let returnValue = 5;
         const testResolver = (key) => key;
+        //function testResolver(key){return key};
         const testFunction = (key) => returnValue;
+        //function testFunction(key){return returnValue*2};
         
-        //const memoized=(key)=> memoization.memoize(testFunction, (key) => key, 1000);
-        const memoized=(key)=> memoization.memoize(testFunction, testResolver, 1000);
-        const memoized_zero=(key)=> memoization.memoize(testFunction, testResolver, 0);
-        const memoized_negative=(key)=> memoization.memoize(testFunction, testResolver, -1000);
+        const memoized=(key)=> memoization.memoize(testFunction, () => key, 1000);
+        //const memoized=(key)=> memoization.memoize(testFunction, testResolver, 1000);
+        const memoized_zero=(key)=> memoization.memoize(testFunction, () => key, 0);
+        const memoized_negative=(key)=> memoization.memoize(testFunction, () => key, -1000);
 
         expect(memoized('c544d3ae-a72d-4755-8ce5-d25db415b776')).to.equal(5);
         returnValue=10;
         expect(memoized('c544d3ae-a72d-4755-8ce5-d25db415b776')).to.equal(5); // Cached value
         expect(memoized('xxx')).to.equal(10); // Fresh calculated since has a different key
+        expect(memoized('www')).to.equal(10); // Fresh calculated since has a different key
         returnValue=12;
         expect(memoized('xxx')).to.equal(10); // Cached value
+        expect(memoized('www')).to.equal(10);
         clock.tick(2000); //sinonjs synch timer
         expect(memoized('c544d3ae-a72d-4755-8ce5-d25db415b776')).to.equal(12); // Fresh calculated value after the timer has expired
 
