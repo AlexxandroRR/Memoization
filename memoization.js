@@ -25,45 +25,68 @@
  *                  original function, the resolver function should provide the memoization key.
  * @param timeout   timeout for cached values in milliseconds
  */
+require("babel-core").transform("code", {
+    plugins: ["transform-remove-strict-mode"]
+  });
+
+const items =[];
 
 function memoize(func, resolver, timeout) {
-    static const items =[];
+//const memoize = (func, resolver, timeout) =>{
     var moiValue ="";
-    var moiKey = (resolver!=null)?resolver:JSON.stringify(func.arguments);  
-    var itemFound=false;
-// if key is contained in items and entry is still valid then return value
-    foreach(it in items)
-        if(it.key == moiKey){  
+    var itemFound= false;
+    //var args = Array.prototype.slice.call(arguments);
+    console.log("resolvervalue=  ", resolver.apply(this, arguments));
+    console.log("funcvaluenull=  ", func.apply(null, arguments));
+    //console.log("funcarg0=  ", func.arguments[0]);
+    //console.log("funcargs=  ", func.arguments);
+    //console.log("funcstringify=  ", JSON.stringify(func.JSON.stringify()));
+    
+    //var moiKey = (resolver.apply(null, arguments)!=null)?resolver.apply(null, arguments):func.args[0];
+    var moiKey = resolver?resolver.apply(null, arguments):func.arguments[0];
 
-            if(Date.now()-it.timeStamp < timeout) //the matching item ist still valid
-                moiValue=it.value;
+    console.log("moiKey= ", moiKey);
+    if (items.length >0)
+    for (i=0; i<items.length; i++){
+    //for (it in items){
+        console.log("for it ---it.key= ", items[i].key, "moiKey= ", moiKey)
+        if(items[i].key == moiKey){  
+            if(Date.now()-items[i].timeStamp < timeout) {//the matching item ist still valid
+                moiValue=items[i].value;
+                console.log("*****Cache*****");
+            }
             else{
-                it.value = func.apply(null, arguments); // the matching item has expired
-                it.timeStamp = Date.now();
-                moiValue = it.value;
+                items[i].value = func.apply(null, arguments); // the matching item has expired)
+                items[i].timeStamp = Date.now();
+                moiValue = items[i].value;
             }
             itemFound=true;
+            break;
         }
-        else{ // cleans up the expired items -- really required? If not we can remove it and we can put a break in the foreach loop as soon as a match hab been found
-            if(Date.now()-it.timeStamp > timeout){
-                var index = items.indexOf((x)=> ḱey ===moiKey);
-                items.slice(index,1);
-            }
-        }
-    if(!itemFound){
-        let entry
-        {
-                    value= func.apply(null, arguments);
-                    key =moiKey;
-                    timeStamp=Date.now();
-        }
-        
-        items.push(entry);
+
+
     }
+    if(!itemFound){
+        const entry =
+        {
+                    value: func.apply(this, arguments),
+                    key: moiKey,
+                    timeStamp: Date.now()
+        }
+        console.log("ADD ENTRY --- entry.value= ", entry.value, " entyr.key= ", entry.key, " entry.timeStamp= ", entry.timeStamp);
+        items.push(entry);
+        console.log("Array length =" + items.length);
+        moiValue=entry.value;
+    }
+    
+    for (i=0; i<items.length; i++)
+    console.log("Id= ", i, " Value= ", items[i].value, " key= ", items[i].key, " timest= ", items[i].timeStamp, "\n");
     
     return moiValue;
 }
 
+
 module.exports = {
-    memoize,
-};
+    memoize
+}
+
