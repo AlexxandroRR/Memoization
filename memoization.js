@@ -30,6 +30,7 @@ require("babel-core").transform("code", {
   });
 
 const items =[];
+const cleanup_timeout = 1000; // seconds
 
 function memoize(func, resolver, timeout) {
 //const memoize = (func, resolver, timeout) =>{
@@ -51,7 +52,7 @@ function memoize(func, resolver, timeout) {
     //for (it in items){
         console.log("for it ---it.key= ", items[i].key, "moiKey= ", moiKey)
         if(items[i].key == moiKey){  
-            if(Date.now()-items[i].timeStamp < timeout) {//the matching item ist still valid
+            if(Date.now()-items[i].timeStamp < timeout/1000) {//here timeout in seconds - the matching item ist still valid
                 moiValue=items[i].value;
                 console.log("*****Cache*****");
             }
@@ -62,6 +63,9 @@ function memoize(func, resolver, timeout) {
             }
             itemFound=true;
             break;
+        // Optional:
+        // Cleanup elements older that cleanup_timeout (-> remove break)
+        // if (Date.now()-items[i].timeStamp>cleanup_timeout) items.slice(i,0);
         }
 
 
