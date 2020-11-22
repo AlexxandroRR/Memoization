@@ -11,10 +11,12 @@ var clock = FakeTimers.install();
 // hint: use https://sinonjs.org/releases/v6.1.5/fake-timers/ for faking timeouts
 let returnValue = "";
 const testFunction = (key) => returnValue;
+const testFunction3Params = (hun, dec, un) => (hun*100+dec*10+un+returnValue);
 //const memoized=(key)=> memoization.memoize(testFunction, testResolver, 1000);
 const memoized=(key)=> memoization.memoize(testFunction, () => key, 2000); // Timeout in ms
 const memoized_zero=(key)=> memoization.memoize(testFunction, () => key, 0);
 const memoized_negative=(key)=> memoization.memoize(testFunction, () => key, -1000);
+const memoized3p=(hun, dec, un)=> memoization.memoize(testFunction3Params, () => (hun*100+dec*10+un),2000);
 
 describe('memoization test 1', function () {
     it('should memoize function result', () => {
@@ -71,6 +73,18 @@ describe('memoization test 2', function () {
             expect(memoized('QQQ')).to.equal(21); // Cached value
             clock.tick(1); //sinonjs synch timer
             expect(memoized('QQQ')).to.equal(22); // Fresh calculated value after the timer has expired        
+        });
+    });
+
+    describe('memoization test 5', function () {
+        it('should memoize function result - function wih more args', () => {
+            returnValue = 1;
+            expect(memoized3p(0,5,11)).to.equal(62); // Fresh value
+            returnValue = 2;
+            expect(memoized3p(0,5,11)).to.equal(62); // Cached
+            clock.tick(2);
+            expect(memoized3p(0,5,11)).to.equal(63); // Fresh value due to time over
+                
         });
     });
     

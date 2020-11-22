@@ -25,9 +25,6 @@
  *                  original function, the resolver function should provide the memoization key.
  * @param timeout   timeout for cached values in milliseconds
  */
-require("babel-core").transform("code", {
-    plugins: ["transform-remove-strict-mode"]
-  });
 
 const items =[];
 const cleanup_timeout = 1000; // seconds
@@ -36,12 +33,9 @@ function memoize(func, resolver, timeout) {
 //const memoize = (func, resolver, timeout) =>{
     var moiValue ="";
     var itemFound= false;
-    //var args = Array.prototype.slice.call(arguments);
+
     console.log("resolvervalue=  ", resolver.apply(this, arguments));
-    console.log("funcvaluenull=  ", func.apply(null, arguments));
-    //console.log("funcarg0=  ", func.arguments[0]);
-    //console.log("funcargs=  ", func.arguments);
-    //console.log("funcstringify=  ", JSON.stringify(func.JSON.stringify()));
+    console.log("funcvaluenull=  ", func.apply(this, arguments));
     
     //var moiKey = (resolver.apply(null, arguments)!=null)?resolver.apply(null, arguments):func.args[0];
     var moiKey = resolver?resolver.apply(null, arguments):func.arguments[0];
